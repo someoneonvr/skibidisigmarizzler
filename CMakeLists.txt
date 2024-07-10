@@ -2,40 +2,13 @@
 
 cmake_minimum_required(VERSION 3.7)
 
-# VS2019 is not happy with std::filesystem::experimental
-if(MSVC_VERSION GREATER_EQUAL 1920)
-  set(CMAKE_CXX_STANDARD 17)
-endif()
+project(OCULUSPCSDK C CXX)
 
-file(GLOB _srcs
-  *.h
-  *.cpp
-)
+ADD_DEFINITIONS(-DUNICODE)
+ADD_DEFINITIONS(-D_UNICODE)
 
-file(GLOB_RECURSE _asset_srcs
-  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  Assets/*
-)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-add_executable(OculusWorldDemo WIN32 ${_srcs})
-
-target_link_libraries(OculusWorldDemo
-  PUBLIC
-    CommonSrc
-    LibOVR
-    LibOVRKernel
-    TinyXml
-)
-
-#
-# Copy required assets from source tree to build output
-#
-foreach(FILENAME ${_asset_srcs})
-    add_custom_command(
-            TARGET OculusWorldDemo POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-                    ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}
-                    ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)/${FILENAME})
-endforeach(FILENAME)
+add_subdirectory(3rdParty/TinyXml)
+add_subdirectory(LibOVRKernel)
+add_subdirectory(LibOVR)
+add_subdirectory(Logging)
+add_subdirectory(Samples)
